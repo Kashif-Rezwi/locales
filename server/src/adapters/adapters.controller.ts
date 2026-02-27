@@ -5,11 +5,11 @@ import { AdapterRegistryService } from './adapter-registry.service';
 @ApiTags('adapters')
 @Controller('adapters')
 export class AdaptersController {
-    constructor(private readonly registry: AdapterRegistryService) { }
+  constructor(private readonly registry: AdapterRegistryService) {}
 
-    @Get()
-    @ApiOperation({ summary: 'List all registered framework adapters' })
-    listAdapters(): { adapters: string[] } {
-        return { adapters: this.registry.listAll() };
-    }
+  @Get()
+  @ApiOperation({ summary: 'List all registered framework adapters' })
+  listAdapters(): { adapters: string[] } {
+    return { adapters: this.registry.listAll() };
+  }
 }

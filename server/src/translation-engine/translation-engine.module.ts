@@ -10,8 +10,8 @@ import { ProvidersModule } from '../providers/providers.module';
  * Exports TranslationEngineService for the pipeline (Chunk 12).
  */
 @Module({
-    imports: [ProvidersModule],
-    providers: [TranslationEngineService],
-    exports: [TranslationEngineService],
+  imports: [ProvidersModule],
+  providers: [TranslationEngineService],
+  exports: [TranslationEngineService],
 })
-export class TranslationEngineModule { }
+export class TranslationEngineModule {}

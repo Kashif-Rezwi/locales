@@ -6,7 +6,7 @@ import { ExtractionService } from './extraction.service';
  * Imported by AdaptersModule so each adapter can inject ExtractionService.
  */
 @Module({
-    providers: [ExtractionService],
-    exports: [ExtractionService],
+  providers: [ExtractionService],
+  exports: [ExtractionService],
 })
-export class ExtractionModule { }
+export class ExtractionModule {}

@@ -11,7 +11,7 @@ import { RuntimeGeneratorService } from './runtime-generator.service';
  * Exported for use by adapters (via AdaptersModule) and the pipeline (Chunk 12).
  */
 @Module({
-    providers: [CodeModService, RuntimeGeneratorService],
-    exports: [CodeModService, RuntimeGeneratorService],
+  providers: [CodeModService, RuntimeGeneratorService],
+  exports: [CodeModService, RuntimeGeneratorService],
 })
-export class CodeModModule { }
+export class CodeModModule {}

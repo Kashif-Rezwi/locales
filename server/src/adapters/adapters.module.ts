@@ -21,30 +21,30 @@ import { CodeModModule } from '../code-mod/code-mod.module';
  * Exports AdapterRegistryService so the pipeline module can call detect().
  */
 @Module({
-    imports: [ExtractionModule, CodeModModule],
-    providers: [
-        AdapterRegistryService,
-        NextjsAppRouterAdapter,
-        NextjsPagesRouterAdapter,
-        ViteReactAdapter,
-        RemixAdapter,
-    ],
-    controllers: [AdaptersController],
-    exports: [AdapterRegistryService],
+  imports: [ExtractionModule, CodeModModule],
+  providers: [
+    AdapterRegistryService,
+    NextjsAppRouterAdapter,
+    NextjsPagesRouterAdapter,
+    ViteReactAdapter,
+    RemixAdapter,
+  ],
+  controllers: [AdaptersController],
+  exports: [AdapterRegistryService],
 })
 export class AdaptersModule implements OnModuleInit {
-    constructor(
-        private readonly registry: AdapterRegistryService,
-        private readonly nextjsAppRouter: NextjsAppRouterAdapter,
-        private readonly nextjsPagesRouter: NextjsPagesRouterAdapter,
-        private readonly viteReact: ViteReactAdapter,
-        private readonly remix: RemixAdapter,
-    ) { }
+  constructor(
+    private readonly registry: AdapterRegistryService,
+    private readonly nextjsAppRouter: NextjsAppRouterAdapter,
+    private readonly nextjsPagesRouter: NextjsPagesRouterAdapter,
+    private readonly viteReact: ViteReactAdapter,
+    private readonly remix: RemixAdapter,
+  ) {}
 
-    onModuleInit(): void {
-        this.registry.register(this.nextjsAppRouter);
-        this.registry.register(this.nextjsPagesRouter);
-        this.registry.register(this.viteReact);
-        this.registry.register(this.remix);
-    }
+  onModuleInit(): void {
+    this.registry.register(this.nextjsAppRouter);
+    this.registry.register(this.nextjsPagesRouter);
+    this.registry.register(this.viteReact);
+    this.registry.register(this.remix);
+  }
 }

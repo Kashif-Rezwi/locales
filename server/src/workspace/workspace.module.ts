@@ -14,7 +14,7 @@ import { LocalWorkspaceProvider } from './local-workspace.provider';
  *   E2B_API_KEY absent → LocalWorkspaceProvider (dev/test)
  */
 @Module({
-    providers: [WorkspaceService, E2BWorkspaceProvider, LocalWorkspaceProvider],
-    exports: [WorkspaceService],
+  providers: [WorkspaceService, E2BWorkspaceProvider, LocalWorkspaceProvider],
+  exports: [WorkspaceService],
 })
-export class WorkspaceModule { }
+export class WorkspaceModule {}

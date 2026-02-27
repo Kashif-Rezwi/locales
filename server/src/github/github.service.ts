@@ -145,43 +145,80 @@ export class GithubService {
     return this.get<{ login: string }>('https://api.github.com/user', token);
   }
 
-  async branchExists(token: string, owner: string, repo: string, branch: string): Promise<boolean> {
+  async branchExists(
+    token: string,
+    owner: string,
+    repo: string,
+    branch: string,
+  ): Promise<boolean> {
     try {
-      await this.get(`https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${branch}`, token);
+      await this.get(
+        `https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${branch}`,
+        token,
+      );
       return true;
-    } catch (e) {
+    } catch {
       return false;
     }
   }
 
-  async getLatestCommitSha(token: string, owner: string, repo: string, branch: string): Promise<string> {
+  async getLatestCommitSha(
+    token: string,
+    owner: string,
+    repo: string,
+    branch: string,
+  ): Promise<string> {
     const data = await this.get<{ object: { sha: string } }>(
       `https://api.github.com/repos/${owner}/${repo}/git/ref/heads/${branch}`,
-      token
+      token,
     );
     return data.object.sha;
   }
 
-  async getCommitTreeSha(token: string, owner: string, repo: string, commitSha: string): Promise<string> {
+  async getCommitTreeSha(
+    token: string,
+    owner: string,
+    repo: string,
+    commitSha: string,
+  ): Promise<string> {
     const data = await this.get<{ tree: { sha: string } }>(
       `https://api.github.com/repos/${owner}/${repo}/git/commits/${commitSha}`,
-      token
+      token,
     );
     return data.tree.sha;
   }
 
-  async createBranch(token: string, owner: string, repo: string, branch: string, sha: string): Promise<void> {
-    await this.post(`https://api.github.com/repos/${owner}/${repo}/git/refs`, token, {
-      ref: `refs/heads/${branch}`,
-      sha,
-    });
+  async createBranch(
+    token: string,
+    owner: string,
+    repo: string,
+    branch: string,
+    sha: string,
+  ): Promise<void> {
+    await this.post(
+      `https://api.github.com/repos/${owner}/${repo}/git/refs`,
+      token,
+      {
+        ref: `refs/heads/${branch}`,
+        sha,
+      },
+    );
   }
 
-  async createBlob(token: string, owner: string, repo: string, content: string): Promise<string> {
-    const data = await this.post<{ sha: string }>(`https://api.github.com/repos/${owner}/${repo}/git/blobs`, token, {
-      content,
-      encoding: 'utf-8',
-    });
+  async createBlob(
+    token: string,
+    owner: string,
+    repo: string,
+    content: string,
+  ): Promise<string> {
+    const data = await this.post<{ sha: string }>(
+      `https://api.github.com/repos/${owner}/${repo}/git/blobs`,
+      token,
+      {
+        content,
+        encoding: 'utf-8',
+      },
+    );
     return data.sha;
   }
 
@@ -190,12 +227,16 @@ export class GithubService {
     owner: string,
     repo: string,
     baseTreeSha: string,
-    tree: Array<{ path: string; mode: '100644'; type: 'blob'; sha: string }>
+    tree: Array<{ path: string; mode: '100644'; type: 'blob'; sha: string }>,
   ): Promise<string> {
-    const data = await this.post<{ sha: string }>(`https://api.github.com/repos/${owner}/${repo}/git/trees`, token, {
-      base_tree: baseTreeSha,
-      tree,
-    });
+    const data = await this.post<{ sha: string }>(
+      `https://api.github.com/repos/${owner}/${repo}/git/trees`,
+      token,
+      {
+        base_tree: baseTreeSha,
+        tree,
+      },
+    );
     return data.sha;
   }
 
@@ -205,30 +246,49 @@ export class GithubService {
     repo: string,
     message: string,
     treeSha: string,
-    parents: string[]
+    parents: string[],
   ): Promise<string> {
-    const data = await this.post<{ sha: string }>(`https://api.github.com/repos/${owner}/${repo}/git/commits`, token, {
-      message,
-      tree: treeSha,
-      parents,
-    });
+    const data = await this.post<{ sha: string }>(
+      `https://api.github.com/repos/${owner}/${repo}/git/commits`,
+      token,
+      {
+        message,
+        tree: treeSha,
+        parents,
+      },
+    );
     return data.sha;
   }
 
-  async updateRef(token: string, owner: string, repo: string, branch: string, sha: string): Promise<void> {
-    await this.post(`https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${branch}`, token, {
-      sha,
-      force: true,
-    }, 'PATCH');
+  async updateRef(
+    token: string,
+    owner: string,
+    repo: string,
+    branch: string,
+    sha: string,
+  ): Promise<void> {
+    await this.post(
+      `https://api.github.com/repos/${owner}/${repo}/git/refs/heads/${branch}`,
+      token,
+      {
+        sha,
+        force: true,
+      },
+      'PATCH',
+    );
   }
 
   async createPullRequest(
     token: string,
     owner: string,
     repo: string,
-    params: { title: string; body: string; head: string; base: string }
+    params: { title: string; body: string; head: string; base: string },
   ): Promise<string> {
-    const data = await this.post<{ html_url: string }>(`https://api.github.com/repos/${owner}/${repo}/pulls`, token, params);
+    const data = await this.post<{ html_url: string }>(
+      `https://api.github.com/repos/${owner}/${repo}/pulls`,
+      token,
+      params,
+    );
     return data.html_url;
   }
 
@@ -243,15 +303,24 @@ export class GithubService {
     return res.json() as Promise<T>;
   }
 
-  private async post<T>(url: string, token: string, bodyObj: any, method: string = 'POST'): Promise<T> {
+  private async post<T>(
+    url: string,
+    token: string,
+    bodyObj: any,
+    method: string = 'POST',
+  ): Promise<T> {
     const res = await fetch(url, {
       method,
       headers: { ...GH_HEADERS(token), 'Content-Type': 'application/json' },
       body: JSON.stringify(bodyObj),
     });
     if (!res.ok) {
-      const bodyText = (await res.json().catch(() => ({}))) as { message?: string };
-      throw new BadRequestException(bodyText.message ?? `GitHub API error: ${res.status}`);
+      const bodyText = (await res.json().catch(() => ({}))) as {
+        message?: string;
+      };
+      throw new BadRequestException(
+        bodyText.message ?? `GitHub API error: ${res.status}`,
+      );
     }
     return res.json() as Promise<T>;
   }

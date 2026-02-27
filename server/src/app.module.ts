@@ -15,7 +15,6 @@ import { CodeModModule } from './code-mod/code-mod.module';
 import { GitDeliveryModule } from './git-delivery/git-delivery.module';
 import { PipelineModule } from './pipeline/pipeline.module';
 
-
 /**
  * AppModule — root NestJS module.
  *
@@ -60,4 +59,4 @@ import { PipelineModule } from './pipeline/pipeline.module';
     PipelineModule,
   ],
 })
-export class AppModule { }
+export class AppModule {}

@@ -19,30 +19,30 @@ import { LingoDevProvider } from './lingo-dev.provider';
  * Exports ProviderRouterService for use by the Translation Memory engine (Chunk 7).
  */
 @Module({
-    providers: [
-        ProviderRouterService,
-        DeepLProvider,
-        GoogleTranslateProvider,
-        OpenAIProvider,
-        LingoDevProvider,
-    ],
-    controllers: [ProvidersController],
-    exports: [ProviderRouterService],
+  providers: [
+    ProviderRouterService,
+    DeepLProvider,
+    GoogleTranslateProvider,
+    OpenAIProvider,
+    LingoDevProvider,
+  ],
+  controllers: [ProvidersController],
+  exports: [ProviderRouterService],
 })
 export class ProvidersModule implements OnModuleInit {
-    constructor(
-        private readonly router: ProviderRouterService,
-        private readonly deepl: DeepLProvider,
-        private readonly google: GoogleTranslateProvider,
-        private readonly openai: OpenAIProvider,
-        private readonly lingo: LingoDevProvider,
-    ) { }
+  constructor(
+    private readonly router: ProviderRouterService,
+    private readonly deepl: DeepLProvider,
+    private readonly google: GoogleTranslateProvider,
+    private readonly openai: OpenAIProvider,
+    private readonly lingo: LingoDevProvider,
+  ) {}
 
-    onModuleInit(): void {
-        // Priority order: DeepL → Google → OpenAI → Lingo.dev
-        this.router.register(this.deepl);
-        this.router.register(this.google);
-        this.router.register(this.openai);
-        this.router.register(this.lingo);
-    }
+  onModuleInit(): void {
+    // Priority order: DeepL → Google → OpenAI → Lingo.dev
+    this.router.register(this.deepl);
+    this.router.register(this.google);
+    this.router.register(this.openai);
+    this.router.register(this.lingo);
+  }
 }

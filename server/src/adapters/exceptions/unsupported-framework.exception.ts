@@ -6,12 +6,12 @@ import { AppException } from '../../common/exceptions/app.exception';
  * the minimum confidence threshold (0.70) for the given repository.
  */
 export class UnsupportedFrameworkException extends AppException {
-    constructor(context?: Record<string, unknown>) {
-        super(
-            'No supported framework detected in this repository. ' +
-            'Supported frameworks: nextjs-app-router, nextjs-pages-router, vite-react, remix.',
-            HttpStatus.UNPROCESSABLE_ENTITY,
-            context,
-        );
-    }
+  constructor(context?: Record<string, unknown>) {
+    super(
+      'No supported framework detected in this repository. ' +
+        'Supported frameworks: nextjs-app-router, nextjs-pages-router, vite-react, remix.',
+      HttpStatus.UNPROCESSABLE_ENTITY,
+      context,
+    );
+  }
 }

@@ -9,16 +9,16 @@ import { GitDeliveryModule } from '../git-delivery/git-delivery.module';
 import { CodeModModule } from '../code-mod/code-mod.module';
 
 @Module({
-    imports: [
-        GithubModule,
-        WorkspaceModule,
-        AdaptersModule,
-        TranslationEngineModule,
-        GitDeliveryModule,
-        CodeModModule,
-    ],
-    controllers: [PipelineController],
-    providers: [PipelineService],
-    exports: [PipelineService],
+  imports: [
+    GithubModule,
+    WorkspaceModule,
+    AdaptersModule,
+    TranslationEngineModule,
+    GitDeliveryModule,
+    CodeModModule,
+  ],
+  controllers: [PipelineController],
+  providers: [PipelineService],
+  exports: [PipelineService],
 })
-export class PipelineModule { }
+export class PipelineModule {}

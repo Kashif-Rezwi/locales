@@ -15,4 +15,4 @@ import { UserModule } from '../user/user.module';
   controllers: [GithubController],
   exports: [GithubService],
 })
-export class GithubModule { }
+export class GithubModule {}
