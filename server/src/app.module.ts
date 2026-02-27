@@ -12,6 +12,8 @@ import { ProvidersModule } from './providers/providers.module';
 import { TranslationEngineModule } from './translation-engine/translation-engine.module';
 import { WorkspaceModule } from './workspace/workspace.module';
 import { CodeModModule } from './code-mod/code-mod.module';
+import { GitDeliveryModule } from './git-delivery/git-delivery.module';
+
 
 /**
  * AppModule — root NestJS module.
@@ -29,6 +31,7 @@ import { CodeModModule } from './code-mod/code-mod.module';
  *  10. TranslationEngineModule — TM + provider pipeline (Chunk 7)
  *  11. WorkspaceModule         — E2B or local workspace isolation (Chunk 8)
  *  12. CodeModModule           — Babel code mod + runtime generator (Chunk 9)
+ *  13. GitDeliveryModule       — Atomic PR generation for locales (Chunk 11)
  */
 @Module({
   imports: [
@@ -51,6 +54,7 @@ import { CodeModModule } from './code-mod/code-mod.module';
     TranslationEngineModule,
     WorkspaceModule,
     CodeModModule,
+    GitDeliveryModule,
   ],
 })
 export class AppModule { }
