@@ -305,10 +305,10 @@ CORE ENGINE
   Chunk 4:  Framework Adapter Registry & Detection System      ✅ COMPLETE
   Chunk 5:  String Extraction Engine (Babel AST)               ✅ COMPLETE
   Chunk 6:  Translation Provider Router & Interface             ✅ COMPLETE
-  Chunk 7:  Translation Memory & Custom Engine
+  Chunk 7:  Translation Memory & Custom Engine                  ✅ COMPLETE
 
 WORKSPACE & DELIVERY
-  Chunk 8:  Workspace Provider (E2B — Lighter Isolation)
+  Chunk 8:  Workspace Provider (E2B — Lighter Isolation)         ✅ COMPLETE
   Chunk 9:  Source Code Transformation & Runtime Generation
   Chunk 10: URL Routing & SEO (hreflang, middleware)
   Chunk 11: Git Delivery (Branch, Commit, PR, Fork)
@@ -546,7 +546,7 @@ PIPELINE & CLIENT
 
 ### Chunk 7: Translation Memory & Custom Engine
 
-- [ ] **Complete**
+- [x] **Complete**
 
 **What:** Build the translation engine that wraps the provider router (Chunk 6) with per-user translation memory, heuristic confidence scoring, and a structured translation pipeline.
 
@@ -582,7 +582,7 @@ PIPELINE & CLIENT
 
 ### Chunk 8: Workspace Provider (E2B — Lighter Isolation)
 
-- [ ] **Complete**
+- [x] **Complete**
 
 **What:** Build the workspace abstraction layer backed by E2B. Each job gets an isolated environment to clone and read the repo. No code execution, no npm install — read-only workspace.
 

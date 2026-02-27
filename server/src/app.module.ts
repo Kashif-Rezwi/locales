@@ -9,6 +9,8 @@ import { GithubModule } from './github/github.module';
 import { AdaptersModule } from './adapters/adapters.module';
 import { ExtractionModule } from './extraction/extraction.module';
 import { ProvidersModule } from './providers/providers.module';
+import { TranslationEngineModule } from './translation-engine/translation-engine.module';
+import { WorkspaceModule } from './workspace/workspace.module';
 
 /**
  * AppModule — root NestJS module.
@@ -20,9 +22,11 @@ import { ProvidersModule } from './providers/providers.module';
  *   4. UserModule     — user persistence (Chunk 3)
  *   5. AuthModule     — AuthGuard + token validation (Chunk 3)
  *   6. GithubModule   — GitHub API integration (Chunk 3)
- *   7. AdaptersModule  — framework adapter registry (Chunk 4)
- *   8. ExtractionModule — Babel AST string extractor (Chunk 5)
- *   9. ProvidersModule  — translation provider router (Chunk 6)
+ *   7. AdaptersModule      — framework adapter registry (Chunk 4)
+ *   8. ExtractionModule    — Babel AST string extractor (Chunk 5)
+ *   9. ProvidersModule     — translation provider router (Chunk 6)
+ *  10. TranslationEngineModule — TM + provider pipeline (Chunk 7)
+ *  11. WorkspaceModule         — E2B or local workspace isolation (Chunk 8)
  */
 @Module({
   imports: [
@@ -42,6 +46,8 @@ import { ProvidersModule } from './providers/providers.module';
     AdaptersModule,
     ExtractionModule,
     ProvidersModule,
+    TranslationEngineModule,
+    WorkspaceModule,
   ],
 })
 export class AppModule { }
