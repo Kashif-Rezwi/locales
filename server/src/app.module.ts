@@ -13,6 +13,7 @@ import { TranslationEngineModule } from './translation-engine/translation-engine
 import { WorkspaceModule } from './workspace/workspace.module';
 import { CodeModModule } from './code-mod/code-mod.module';
 import { GitDeliveryModule } from './git-delivery/git-delivery.module';
+import { PipelineModule } from './pipeline/pipeline.module';
 
 
 /**
@@ -32,6 +33,7 @@ import { GitDeliveryModule } from './git-delivery/git-delivery.module';
  *  11. WorkspaceModule         — E2B or local workspace isolation (Chunk 8)
  *  12. CodeModModule           — Babel code mod + runtime generator (Chunk 9)
  *  13. GitDeliveryModule       — Atomic PR generation for locales (Chunk 11)
+ *  14. PipelineModule          — Master orchestrator and SSE stream (Chunk 12)
  */
 @Module({
   imports: [
@@ -55,6 +57,7 @@ import { GitDeliveryModule } from './git-delivery/git-delivery.module';
     WorkspaceModule,
     CodeModModule,
     GitDeliveryModule,
+    PipelineModule,
   ],
 })
 export class AppModule { }

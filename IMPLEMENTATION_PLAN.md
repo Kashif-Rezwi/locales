@@ -745,7 +745,7 @@ PIPELINE & CLIENT
 
 ### Chunk 12: Orchestration Pipeline & Job Management
 
-- [ ] **Complete**
+- [x] **Complete**
 
 **What:** Build the deterministic pipeline orchestrator that sequences all steps end to end, manages job lifecycle, handles errors and cancellation, and streams real-time progress to the client via SSE.
 
@@ -940,6 +940,8 @@ PIPELINE & CLIENT
 | 8 | Workspace Provider (E2B — Lighter Isolation) | Not Started | |
 | 9 | Source Code Transformation & Runtime Generation | Not Started | |
 | 10 | URL Routing & SEO (hreflang, middleware) | Not Started | |
-| 11 | Git Delivery (Branch, Commit, PR, Fork) | Not Started | |
-| 12 | Orchestration Pipeline & Job Management | Not Started | |
-| 13 | Client Application (Dashboard, Job View, Settings) | Not Started | |
+| 11 | Git Delivery | `server/src/git-delivery/` | [x] Completed |
+| 12 | Orchestration Pipeline | `server/src/pipeline/` | [x] Completed |
+| 13 | Client App (Auth/Dashboard/Jobs) | `client/src/` | [ ] Pending |
+
+```
