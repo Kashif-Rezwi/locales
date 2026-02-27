@@ -8,6 +8,7 @@ import type {
     RuntimeConfig,
     SourceString,
 } from './adapter.types';
+import { ExtractionService } from '../extraction/extraction.service';
 
 /**
  * Next.js App Router adapter.
@@ -23,6 +24,8 @@ import type {
 export class NextjsAppRouterAdapter implements FrameworkAdapter {
     readonly name = 'nextjs-app-router';
 
+    constructor(private readonly extractionService: ExtractionService) { }
+
     detect(deps: DepsMap, filePaths: string[]): DetectionResult {
         const hasNext = 'next' in deps;
         if (!hasNext) return { name: this.name, confidence: 0 };
@@ -35,10 +38,7 @@ export class NextjsAppRouterAdapter implements FrameworkAdapter {
                 p === 'src/app/layout.jsx',
         );
 
-        return {
-            name: this.name,
-            confidence: hasAppLayout ? 0.95 : 0.75,
-        };
+        return { name: this.name, confidence: hasAppLayout ? 0.95 : 0.75 };
     }
 
     getEntryPoint(filePaths: string[]): string | null {
@@ -54,16 +54,13 @@ export class NextjsAppRouterAdapter implements FrameworkAdapter {
     }
 
     async extractStrings(
-        _filePaths: string[],
-        _readFile: (path: string) => Promise<string>,
+        filePaths: string[],
+        readFile: (path: string) => Promise<string>,
     ): Promise<SourceString[]> {
-        throw new NotImplementedException('extractStrings — implemented in Chunk 5');
+        return this.extractionService.extractFromFiles(filePaths, readFile);
     }
 
-    async applyCodeMod(
-        _files: ModifiedFile[],
-        _strings: SourceString[],
-    ): Promise<ModifiedFile[]> {
+    async applyCodeMod(_files: ModifiedFile[], _strings: SourceString[]): Promise<ModifiedFile[]> {
         throw new NotImplementedException('applyCodeMod — implemented in Chunk 9');
     }
 

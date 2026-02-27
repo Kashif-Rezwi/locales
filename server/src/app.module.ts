@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { GithubModule } from './github/github.module';
 import { AdaptersModule } from './adapters/adapters.module';
+import { ExtractionModule } from './extraction/extraction.module';
 
 /**
  * AppModule — root NestJS module.
@@ -36,6 +37,7 @@ import { AdaptersModule } from './adapters/adapters.module';
     AuthModule,
     GithubModule,
     AdaptersModule,
+    ExtractionModule,
   ],
 })
 export class AppModule { }

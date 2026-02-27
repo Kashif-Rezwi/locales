@@ -8,15 +8,16 @@ import type {
     RuntimeConfig,
     SourceString,
 } from './adapter.types';
+import { ExtractionService } from '../extraction/extraction.service';
 
 /**
  * Vite + React adapter.
  *
  * Detection signals:
- *   - `vite` in deps or devDeps (required)
- *   - `react` in deps (required — distinguishes from Vite + Vue/Svelte)
+ *   - `vite` in deps (required)
+ *   - `react` in deps (distinguishes from Vite + Vue/Svelte)
  *   - `vite.config.ts` or `vite.config.js` in file tree
- *   - NOT `next` in deps (would be Next.js)
+ *   - NOT `next` in deps
  *
  * Confidence: 0.95 with vite config; 0.75 if only vite + react in deps.
  */
@@ -24,14 +25,14 @@ import type {
 export class ViteReactAdapter implements FrameworkAdapter {
     readonly name = 'vite-react';
 
+    constructor(private readonly extractionService: ExtractionService) { }
+
     detect(deps: DepsMap, filePaths: string[]): DetectionResult {
         const hasVite = 'vite' in deps;
         const hasReact = 'react' in deps;
         const hasNext = 'next' in deps;
 
-        if (!hasVite || !hasReact || hasNext) {
-            return { name: this.name, confidence: 0 };
-        }
+        if (!hasVite || !hasReact || hasNext) return { name: this.name, confidence: 0 };
 
         const hasViteConfig = filePaths.some(
             (p) =>
@@ -41,10 +42,7 @@ export class ViteReactAdapter implements FrameworkAdapter {
                 p === 'vite.config.mjs',
         );
 
-        return {
-            name: this.name,
-            confidence: hasViteConfig ? 0.95 : 0.75,
-        };
+        return { name: this.name, confidence: hasViteConfig ? 0.95 : 0.75 };
     }
 
     getEntryPoint(filePaths: string[]): string | null {
@@ -60,16 +58,13 @@ export class ViteReactAdapter implements FrameworkAdapter {
     }
 
     async extractStrings(
-        _filePaths: string[],
-        _readFile: (path: string) => Promise<string>,
+        filePaths: string[],
+        readFile: (path: string) => Promise<string>,
     ): Promise<SourceString[]> {
-        throw new NotImplementedException('extractStrings — implemented in Chunk 5');
+        return this.extractionService.extractFromFiles(filePaths, readFile);
     }
 
-    async applyCodeMod(
-        _files: ModifiedFile[],
-        _strings: SourceString[],
-    ): Promise<ModifiedFile[]> {
+    async applyCodeMod(_files: ModifiedFile[], _strings: SourceString[]): Promise<ModifiedFile[]> {
         throw new NotImplementedException('applyCodeMod — implemented in Chunk 9');
     }
 
