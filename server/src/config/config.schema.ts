@@ -1,0 +1,33 @@
+import * as Joi from 'joi';
+
+/**
+ * Joi validation schema for all environment variables.
+ *
+ * Required on startup:
+ *   DATABASE_URL  — Neon PostgreSQL connection string
+ *   FRONTEND_URL  — client origin used for CORS
+ *
+ * Optional (populated as each service chunk is implemented):
+ *   E2B_API_KEY          — workspace isolation (Chunk 8)
+ *   GROQ_API_KEY         — LLM for PR descriptions (Chunk 11)
+ *   LINGO_API_KEY        — translation provider (Chunk 6)
+ *   DEEPL_API_KEY        — translation provider (Chunk 6)
+ *   GOOGLE_TRANSLATE_KEY — translation provider (Chunk 6)
+ *   OPENAI_API_KEY       — translation provider (Chunk 6)
+ *
+ * If a required variable is missing, the server refuses to start with a
+ * precise error message (e.g. '"DATABASE_URL" is required').
+ */
+export const configSchema = Joi.object({
+  PORT: Joi.number().default(3001),
+  FRONTEND_URL: Joi.string().uri().required(),
+  DATABASE_URL: Joi.string().required(),
+
+  // External services — optional until their chunks are built
+  E2B_API_KEY: Joi.string().optional(),
+  GROQ_API_KEY: Joi.string().optional(),
+  LINGO_API_KEY: Joi.string().optional(),
+  DEEPL_API_KEY: Joi.string().optional(),
+  GOOGLE_TRANSLATE_KEY: Joi.string().optional(),
+  OPENAI_API_KEY: Joi.string().optional(),
+});

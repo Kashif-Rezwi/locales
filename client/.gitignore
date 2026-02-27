@@ -9,14 +9,8 @@ node_modules/
 !.yarn/versions
 
 # ─── Build outputs ───────────────────────────────────────────────────
-# Next.js
-client/.next/
-client/out/
-
-# NestJS
-server/dist/
-
-# Shared
+.next/
+out/
 build/
 coverage/
 
@@ -27,7 +21,7 @@ coverage/
 
 # ─── TypeScript ──────────────────────────────────────────────────────
 *.tsbuildinfo
-client/next-env.d.ts
+next-env.d.ts
 
 # ─── Logs ────────────────────────────────────────────────────────────
 *.log

@@ -1,0 +1,12 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  // Connection URL is managed in prisma.config.ts (Prisma 7 requirement).
+  // Migrations: npx prisma migrate dev  (reads datasource.url from prisma.config.ts)
+  // Runtime:    PrismaService passes the URL via @prisma/adapter-neon at startup
+  // All models (User, Project, Job, SourceString, Translation, TranslationMemory)
+  // are defined in Chunk 2: Database Schema & Prisma Models.
+}
