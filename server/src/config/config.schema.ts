@@ -24,10 +24,11 @@ export const configSchema = Joi.object({
   DATABASE_URL: Joi.string().required(),
 
   // External services — optional until their chunks are built
-  E2B_API_KEY: Joi.string().optional(),
-  GROQ_API_KEY: Joi.string().optional(),
-  LINGO_API_KEY: Joi.string().optional(),
-  DEEPL_API_KEY: Joi.string().optional(),
-  GOOGLE_TRANSLATE_KEY: Joi.string().optional(),
-  OPENAI_API_KEY: Joi.string().optional(),
+  E2B_API_KEY: Joi.string().optional().allow(''),
+  GROQ_API_KEY: Joi.string().optional().allow(''),
+  LINGO_API_KEY: Joi.string().optional().allow(''),
+  DEEPL_API_KEY: Joi.string().optional().allow(''),
+  GOOGLE_TRANSLATE_KEY: Joi.string().optional().allow(''),
+  GOOGLE_TRANSLATE_API_KEY: Joi.string().optional().allow(''),
+  OPENAI_API_KEY: Joi.string().optional().allow(''),
 });

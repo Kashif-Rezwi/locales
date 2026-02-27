@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module';
 import { GithubModule } from './github/github.module';
 import { AdaptersModule } from './adapters/adapters.module';
 import { ExtractionModule } from './extraction/extraction.module';
+import { ProvidersModule } from './providers/providers.module';
 
 /**
  * AppModule — root NestJS module.
@@ -19,7 +20,9 @@ import { ExtractionModule } from './extraction/extraction.module';
  *   4. UserModule     — user persistence (Chunk 3)
  *   5. AuthModule     — AuthGuard + token validation (Chunk 3)
  *   6. GithubModule   — GitHub API integration (Chunk 3)
- *   7. AdaptersModule — framework adapter registry (Chunk 4)
+ *   7. AdaptersModule  — framework adapter registry (Chunk 4)
+ *   8. ExtractionModule — Babel AST string extractor (Chunk 5)
+ *   9. ProvidersModule  — translation provider router (Chunk 6)
  */
 @Module({
   imports: [
@@ -38,6 +41,7 @@ import { ExtractionModule } from './extraction/extraction.module';
     GithubModule,
     AdaptersModule,
     ExtractionModule,
+    ProvidersModule,
   ],
 })
 export class AppModule { }
