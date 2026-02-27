@@ -11,6 +11,7 @@ import { ExtractionModule } from './extraction/extraction.module';
 import { ProvidersModule } from './providers/providers.module';
 import { TranslationEngineModule } from './translation-engine/translation-engine.module';
 import { WorkspaceModule } from './workspace/workspace.module';
+import { CodeModModule } from './code-mod/code-mod.module';
 
 /**
  * AppModule — root NestJS module.
@@ -27,6 +28,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
  *   9. ProvidersModule     — translation provider router (Chunk 6)
  *  10. TranslationEngineModule — TM + provider pipeline (Chunk 7)
  *  11. WorkspaceModule         — E2B or local workspace isolation (Chunk 8)
+ *  12. CodeModModule           — Babel code mod + runtime generator (Chunk 9)
  */
 @Module({
   imports: [
@@ -48,6 +50,7 @@ import { WorkspaceModule } from './workspace/workspace.module';
     ProvidersModule,
     TranslationEngineModule,
     WorkspaceModule,
+    CodeModModule,
   ],
 })
 export class AppModule { }

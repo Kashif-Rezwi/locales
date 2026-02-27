@@ -309,7 +309,7 @@ CORE ENGINE
 
 WORKSPACE & DELIVERY
   Chunk 8:  Workspace Provider (E2B — Lighter Isolation)         ✅ COMPLETE
-  Chunk 9:  Source Code Transformation & Runtime Generation
+  Chunk 9:  Source Code Transformation & Runtime Generation    ✅ COMPLETE
   Chunk 10: URL Routing & SEO (hreflang, middleware)
   Chunk 11: Git Delivery (Branch, Commit, PR, Fork)
 
@@ -620,7 +620,7 @@ PIPELINE & CLIENT
 
 ### Chunk 9: Source Code Transformation & Runtime Generation
 
-- [ ] **Complete**
+- [x] **Complete**
 
 **What:** Build the two-pass system that (1) transforms all source files by replacing hardcoded strings with `t("hash")` calls via Babel code mod, and (2) generates the minimal i18n runtime — a `t()` helper function and a locale loader for the root layout — as in-memory file objects ready for Git commit.
 

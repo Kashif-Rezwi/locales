@@ -6,6 +6,7 @@ import { NextjsPagesRouterAdapter } from './nextjs-pages-router.adapter';
 import { ViteReactAdapter } from './vite-react.adapter';
 import { RemixAdapter } from './remix.adapter';
 import { ExtractionModule } from '../extraction/extraction.module';
+import { CodeModModule } from '../code-mod/code-mod.module';
 
 /**
  * AdaptersModule — wires all framework adapters into the NestJS DI system.
@@ -16,11 +17,11 @@ import { ExtractionModule } from '../extraction/extraction.module';
  *   3. vite-react         (confidence 0.95)
  *   4. remix              (confidence 0.95)
  *
- * Imports ExtractionModule so adapters can inject ExtractionService.
+ * Imports ExtractionModule and CodeModModule so adapters can inject their services.
  * Exports AdapterRegistryService so the pipeline module can call detect().
  */
 @Module({
-    imports: [ExtractionModule],
+    imports: [ExtractionModule, CodeModModule],
     providers: [
         AdapterRegistryService,
         NextjsAppRouterAdapter,

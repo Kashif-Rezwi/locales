@@ -1,74 +1,64 @@
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type {
-    FrameworkAdapter,
-    DepsMap,
-    DetectionResult,
-    ModifiedFile,
-    GeneratedFile,
-    RuntimeConfig,
-    SourceString,
+    FrameworkAdapter, DepsMap, DetectionResult,
+    ModifiedFile, GeneratedFile, RuntimeConfig, SourceString,
 } from './adapter.types';
 import { ExtractionService } from '../extraction/extraction.service';
+import { CodeModService } from '../code-mod/code-mod.service';
+import { RuntimeGeneratorService } from '../code-mod/runtime-generator.service';
 
 /**
  * Next.js Pages Router adapter.
- *
- * Detection signals:
- *   - `next` in deps (required)
- *   - `pages/_app.tsx` or `pages/_app.jsx` present in file tree
- *
- * Confidence: 0.90 with _app file; 0.60 if only `next` in deps.
+ * Detection: `next` dep + `pages/_app.tsx`. Confidence 0.90.
  * Lower than App Router (0.95) so App Router wins in hybrid repos.
  */
 @Injectable()
 export class NextjsPagesRouterAdapter implements FrameworkAdapter {
     readonly name = 'nextjs-pages-router';
 
-    constructor(private readonly extractionService: ExtractionService) { }
+    constructor(
+        private readonly extractionService: ExtractionService,
+        private readonly codeModService: CodeModService,
+        private readonly runtimeGenerator: RuntimeGeneratorService,
+    ) { }
 
     detect(deps: DepsMap, filePaths: string[]): DetectionResult {
-        const hasNext = 'next' in deps;
-        if (!hasNext) return { name: this.name, confidence: 0 };
-
+        if (!('next' in deps)) return { name: this.name, confidence: 0 };
         const hasApp = filePaths.some(
-            (p) =>
-                p === 'pages/_app.tsx' ||
-                p === 'pages/_app.jsx' ||
-                p === 'pages/_app.ts' ||
-                p === 'pages/_app.js',
+            (p) => p === 'pages/_app.tsx' || p === 'pages/_app.jsx' ||
+                p === 'pages/_app.ts' || p === 'pages/_app.js',
         );
-
         return { name: this.name, confidence: hasApp ? 0.90 : 0.60 };
     }
 
     getEntryPoint(filePaths: string[]): string | null {
-        return (
-            filePaths.find(
-                (p) =>
-                    p === 'pages/_app.tsx' ||
-                    p === 'pages/_app.jsx' ||
-                    p === 'pages/_app.ts' ||
-                    p === 'pages/_app.js',
-            ) ?? null
-        );
+        return filePaths.find(
+            (p) => p === 'pages/_app.tsx' || p === 'pages/_app.jsx' ||
+                p === 'pages/_app.ts' || p === 'pages/_app.js',
+        ) ?? null;
     }
 
-    async extractStrings(
-        filePaths: string[],
-        readFile: (path: string) => Promise<string>,
-    ): Promise<SourceString[]> {
+    async extractStrings(filePaths: string[], readFile: (p: string) => Promise<string>): Promise<SourceString[]> {
         return this.extractionService.extractFromFiles(filePaths, readFile);
     }
 
-    async applyCodeMod(_files: ModifiedFile[], _strings: SourceString[]): Promise<ModifiedFile[]> {
-        throw new NotImplementedException('applyCodeMod — implemented in Chunk 9');
+    async applyCodeMod(files: ModifiedFile[], strings: SourceString[]): Promise<ModifiedFile[]> {
+        const readFile = (path: string): Promise<string | null> => {
+            const file = files.find((f) => f.filePath === path);
+            return Promise.resolve(file?.content ?? null);
+        };
+        return this.codeModService.transformFiles(strings, readFile);
     }
 
-    generateRuntime(_config: RuntimeConfig, _locales: string[]): GeneratedFile[] {
-        throw new NotImplementedException('generateRuntime — implemented in Chunk 9');
+    generateRuntime(config: RuntimeConfig, locales: string[]): GeneratedFile[] {
+        const results: GeneratedFile[] = [this.runtimeGenerator.generateI18nHelper()];
+        const entryPoint = this.getEntryPoint(Object.keys(config as unknown as Record<string, unknown>)) ??
+            'pages/_app.tsx';
+        results.push(this.runtimeGenerator.generateLayoutPatch(this.name, entryPoint, locales));
+        return results;
     }
 
     generateRouting(_locales: string[]): GeneratedFile[] {
-        throw new NotImplementedException('generateRouting — implemented in Chunk 10');
+        return []; // Chunk 10
     }
 }
