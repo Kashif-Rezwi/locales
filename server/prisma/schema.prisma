@@ -5,8 +5,191 @@ generator client {
 datasource db {
   provider = "postgresql"
   // Connection URL is managed in prisma.config.ts (Prisma 7 requirement).
-  // Migrations: npx prisma migrate dev  (reads datasource.url from prisma.config.ts)
-  // Runtime:    PrismaService passes the URL via @prisma/adapter-neon at startup
-  // All models (User, Project, Job, SourceString, Translation, TranslationMemory)
-  // are defined in Chunk 2: Database Schema & Prisma Models.
+  // CLI (migrate/introspect) reads datasource.url from prisma.config.ts.
+  // Runtime: PrismaService passes the URL via @prisma/adapter-neon at startup.
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────────
+
+/// Lifecycle states of a translation job.
+enum JobStatus {
+  pending    // Created, not yet picked up
+  running    // Pipeline is actively executing
+  completed  // All steps succeeded; PR created
+  failed     // An unrecoverable error occurred
+  cancelled  // Cancelled by user before completion
+}
+
+/// How the pipeline delivers translations back to the repo.
+/// direct = commit directly to a branch on the original repo (push access required)
+/// fork   = commit to a user-owned fork and open a cross-repo PR
+enum AccessMode {
+  direct
+  fork
+}
+
+/// Review state of a translated string.
+enum ReviewStatus {
+  pending   // Not yet reviewed
+  approved  // Accepted as-is
+  rejected  // Marked for re-translation
+}
+
+// ─── Models ───────────────────────────────────────────────────────────────────
+
+/// GitHub-authenticated user. Created on first sign-in, updated on subsequent logins.
+model User {
+  id        String   @id @default(cuid())
+  githubId  String   @unique
+  email     String?
+  name      String?
+  avatarUrl String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects          Project[]
+  translationMemory TranslationMemory[]
+
+  @@index([githubId])
+}
+
+/// A GitHub repository configured for i18n automation.
+/// One Project per (user, repo) combination.
+model Project {
+  id             String     @id @default(cuid())
+  userId         String
+  repoUrl        String
+  githubOwner    String
+  githubRepo     String
+  defaultBranch  String     @default("main")
+  accessMode     AccessMode @default(direct)
+  /// Populated after fork — the GitHub login that owns the fork
+  forkOwner      String?
+  /// Populated after fork — the repository name of the fork
+  forkRepo       String?
+  /// Detected framework (e.g. "next", "remix", "vite-react").
+  /// Null until the first job runs framework detection.
+  framework      String?
+  defaultLocale  String     @default("en")
+  /// Ordered list of BCP-47 locale codes to translate into (e.g. ["es","fr","de"])
+  targetLocales  String[]
+  lastExtractedAt DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobs          Job[]
+  sourceStrings SourceString[]
+
+  @@index([userId])
+  @@index([githubOwner, githubRepo])
+}
+
+/// A single pipeline execution: extract → translate → inject → commit → PR.
+model Job {
+  id           String    @id @default(cuid())
+  projectId    String
+  status       JobStatus @default(pending)
+  sourceBranch String
+  /// BCP-47 locale codes this job is translating into
+  locales      String[]
+  /// GitHub PR URL — populated when the pipeline completes successfully
+  prUrl        String?
+  /// Human-readable error message — populated when status = failed
+  error        String?
+  /// Append-only array of log lines streamed to the client via SSE.
+  /// Schema: [{ ts: ISO8601, level: "info"|"warn"|"error", message: string }]
+  logs         Json      @default("[]")
+  /// Arbitrary key-value pairs for pipeline metadata (step timings, counts, etc.)
+  metadata     Json      @default("{}")
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([status])
+}
+
+/// A single translatable string extracted from the source code.
+/// Deduplicated per project by SHA-256 hash of NFC-normalised sourceText.
+model SourceString {
+  id         String   @id @default(cuid())
+  projectId  String
+  /// SHA-256 of NFC-normalised sourceText — used as a stable identity key
+  hash       String
+  /// The raw source string (TEXT — no length limit)
+  sourceText String   @db.Text
+  /// Relative path from repo root to the file containing this string
+  filePath   String
+  /// AST node type where the string was found (e.g. "JSXText", "StringLiteral")
+  nodeType   String
+  /// Optional surrounding context to aid translation quality (e.g. aria-label scope)
+  context    String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  project      Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  translations Translation[]
+
+  /// One SourceString per (project, hash) — same text in multiple files = one record
+  @@unique([projectId, hash])
+  @@index([projectId])
+  @@index([hash])
+}
+
+/// A translated version of a SourceString for a specific target locale.
+model Translation {
+  id             String       @id @default(cuid())
+  sourceStringId String
+  /// BCP-47 target locale code (e.g. "es", "fr-CA")
+  targetLocale   String
+  /// The translated string produced by the provider
+  translatedText String       @db.Text
+  /// Provider that produced this translation (e.g. "deepl", "google", "openai", "lingo")
+  provider       String
+  /// Heuristic confidence score 0–1 (length ratio, empty check, source===translation)
+  confidence     Float        @default(0)
+  reviewStatus   ReviewStatus @default(pending)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  sourceString SourceString @relation(fields: [sourceStringId], references: [id], onDelete: Cascade)
+
+  /// One Translation per (sourceString, targetLocale) — enforces uniqueness
+  @@unique([sourceStringId, targetLocale])
+  @@index([sourceStringId])
+  @@index([targetLocale])
+}
+
+/// Per-user translation cache. Keyed by (userId, hash, sourceLocale, targetLocale).
+/// Cross-project within the same user account. Shared TM is Cloud tier.
+model TranslationMemory {
+  id             String   @id @default(cuid())
+  userId         String
+  /// SHA-256 of NFC-normalised sourceText — must match SourceString.hash
+  hash           String
+  /// The source string (TEXT — no length limit)
+  sourceText     String   @db.Text
+  /// BCP-47 source locale (e.g. "en")
+  sourceLocale   String
+  /// BCP-47 target locale (e.g. "es")
+  targetLocale   String
+  /// The cached translation
+  translatedText String   @db.Text
+  /// Provider that produced this translation
+  provider       String
+  /// Heuristic confidence score 0–1
+  confidence     Float    @default(0)
+  /// Incremented every time this TM entry is used — useful for analytics
+  usageCount     Int      @default(1)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The TM lookup key: same user + same source string + same direction
+  @@unique([userId, hash, sourceLocale, targetLocale])
+  @@index([userId])
+  @@index([hash])
 }
