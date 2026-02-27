@@ -3,23 +3,20 @@ import { ConfigModule } from '@nestjs/config';
 import { configSchema } from './config/config.schema';
 import { DatabaseModule } from './database/database.module';
 import { HealthModule } from './health/health.module';
+import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
+import { GithubModule } from './github/github.module';
 
 /**
  * AppModule — root NestJS module.
  *
- * Import order matters conceptually:
+ * Import order:
  *   1. ConfigModule   — must be first; provides env vars to everything else
  *   2. DatabaseModule — global PrismaService, available everywhere
- *   3. HealthModule   — public health check endpoint
- *
- * Future chunks add their modules here:
- *   Chunk 3  → AuthModule, GithubModule
- *   Chunk 4  → AdaptersModule
- *   Chunk 6  → TranslationModule
- *   Chunk 7  → TranslationMemoryModule
- *   Chunk 8  → WorkspaceModule
- *   Chunk 11 → GitDeliveryModule
- *   Chunk 12 → PipelineModule
+ *   3. HealthModule   — public health check (no auth required)
+ *   4. UserModule     — user persistence (Chunk 3)
+ *   5. AuthModule     — AuthGuard + token validation (Chunk 3)
+ *   6. GithubModule   — GitHub API integration (Chunk 3)
  */
 @Module({
   imports: [
@@ -27,14 +24,15 @@ import { HealthModule } from './health/health.module';
       isGlobal: true,
       validationSchema: configSchema,
       validationOptions: {
-        // allowUnknown: true so that OS-level env vars (PATH, HOME, etc.) are
-        // ignored by Joi — we only validate the keys we explicitly declare.
         allowUnknown: true,
         abortEarly: false,
       },
     }),
     DatabaseModule,
     HealthModule,
+    UserModule,
+    AuthModule,
+    GithubModule,
   ],
 })
 export class AppModule {}
