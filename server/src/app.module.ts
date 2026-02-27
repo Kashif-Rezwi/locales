@@ -6,6 +6,7 @@ import { HealthModule } from './health/health.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { GithubModule } from './github/github.module';
+import { AdaptersModule } from './adapters/adapters.module';
 
 /**
  * AppModule — root NestJS module.
@@ -17,6 +18,7 @@ import { GithubModule } from './github/github.module';
  *   4. UserModule     — user persistence (Chunk 3)
  *   5. AuthModule     — AuthGuard + token validation (Chunk 3)
  *   6. GithubModule   — GitHub API integration (Chunk 3)
+ *   7. AdaptersModule — framework adapter registry (Chunk 4)
  */
 @Module({
   imports: [
@@ -33,6 +35,7 @@ import { GithubModule } from './github/github.module';
     UserModule,
     AuthModule,
     GithubModule,
+    AdaptersModule,
   ],
 })
-export class AppModule {}
+export class AppModule { }
